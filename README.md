@@ -8,10 +8,10 @@ We share checkpoints for all the pretrained models in the paper, and their Image
 
 The details of the models and their [torch hub](https://pytorch.org/docs/stable/hub.html) names are listed below.
 
-| Model | Pretrained Name | Pretrain Resolution | IN-1K Finetuned Name | Finetune Resolution | IN-1K Top-1 | 
+| Model | Pretrain Resolution | Pretrained Name | Finetune Resolution | IN-1K Finetuned Name | IN-1K Top-1 | 
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| ViT H/14 | vit_h14 | 224 x 224 | vit_h14_in1k | 518 x 518 | 88.6% |
-| RegNetY 128GF | regnety_128gf | 224 x 224 | regnety_128gf_in1k | 384 x 384 | 88.2% |
+| ViT H/14 | 224 x 224 | vit_h14 | 518 x 518 | vit_h14_in1k | 88.6% |
+| RegNetY 128GF | 224 x 224 | regnety_128gf | 384 x 384 | regnety_128gf_in1k | 88.2% |
 
 The models can be loaded via torch hub using the following command -
 
