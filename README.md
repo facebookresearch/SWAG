@@ -31,3 +31,6 @@ If you use the SWAG models or if the work is useful in your research, please cit
       year={2022},
 }
 ```
+
+## License
+SWAG models are released under the CC-BY-NC 4.0 license. See [LICENSE](LICENSE) for additional details.
