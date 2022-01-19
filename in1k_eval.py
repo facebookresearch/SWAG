@@ -32,6 +32,8 @@ parser.add_argument('-m', '--model', metavar='MODEL', default='vit_b16_in1k',
                     help='model name: ' +
                         ' | '.join(model_names) +
                         ' (default: vit_b16_in1k)')
+parser.add_argument('-r', '--resolution', default=224, type=int,
+                    help='input resolution of the images')
 parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
 parser.add_argument('-b', '--batch-size', default=250, type=int,
@@ -103,8 +105,8 @@ def main_worker(gpu, ngpus_per_node, args):
                                 world_size=args.world_size, rank=args.rank)
     # create model
     model = torch.hub.load("./", args.model, source="local")
-    from torchvision.models import resnet50
-    model = resnet50(pretrained=True)
+    # from torchvision.models import resnet50
+    # model = resnet50(pretrained=True)
 
     if not torch.cuda.is_available():
         print('using CPU, this will be slow')
@@ -143,8 +145,8 @@ def main_worker(gpu, ngpus_per_node, args):
 
     val_loader = torch.utils.data.DataLoader(
         datasets.ImageFolder(valdir, transforms.Compose([
-            transforms.Resize(224),
-            transforms.CenterCrop(224),
+            transforms.Resize(args.resolution),
+            transforms.CenterCrop(args.resolution),
             transforms.ToTensor(),
             normalize,
         ])),

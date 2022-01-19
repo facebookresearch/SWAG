@@ -15,7 +15,7 @@ from .vision_transformer import ViTB16, ViTH14, ViTL16
 
 class ModelCheckpoints(Enum):
     regnety_16gf = ""
-    regnety_16gf_in1k = ""
+    regnety_16gf_in1k = "https://dl.fbaipublicfiles.com/SWAG/regnety_16gf_in1k.torch"
     regnety_32gf = ""
     regnety_32gf_in1k = ""
     regnety_128gf = "https://dl.fbaipublicfiles.com/SWAG/regnety_128gf_10b.torch"

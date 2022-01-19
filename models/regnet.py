@@ -791,37 +791,31 @@ class RegNet(AnyNet):
 
 
 class RegNetY16gf(RegNet):
-    HEAD_IN_PLANE = 3024
-
     def __init__(self, **kwargs):
         # Output size: 3024 feature maps
         super().__init__(
             RegNetParams(
-                depth=18, w_0=200, w_a=106.23, w_m=2.48, group_width=112, head_in_plane=RegNetY128gf.HEAD_IN_PLANE, **kwargs
+                depth=18, w_0=200, w_a=106.23, w_m=2.48, group_width=112, head_in_plane=3024, **kwargs
             )
         )
 
 
 class RegNetY32gf(RegNet):
-    HEAD_IN_PLANE = 3712
-
     def __init__(self, **kwargs):
         # Output size: 3712 feature maps
         super().__init__(
             RegNetParams(
-                depth=20, w_0=232, w_a=115.89, w_m=2.53, group_width=232, head_in_plane=RegNetY128gf.HEAD_IN_PLANE, **kwargs
+                depth=20, w_0=232, w_a=115.89, w_m=2.53, group_width=232, head_in_plane=3712, **kwargs
             )
         )
 
 
 class RegNetY128gf(RegNet):
-    HEAD_IN_PLANE = 7392
-
     def __init__(self, **kwargs):
         # Output size: 7392 feature maps
         super().__init__(
             RegNetParams(
-                depth=27, w_0=456, w_a=160.83, w_m=2.52, group_width=264, head_in_plane=RegNetY128gf.HEAD_IN_PLANE, **kwargs
+                depth=27, w_0=456, w_a=160.83, w_m=2.52, group_width=264, head_in_plane=7392, **kwargs
             )
         )
 
