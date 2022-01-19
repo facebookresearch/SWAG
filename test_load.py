@@ -1,4 +1,3 @@
-
 print('Testing RegNetY128gf')
 from models import regnety_128gf
 model = regnety_128gf()
@@ -27,3 +26,8 @@ model = vit_h14_in1k()
 print('Testing ViT B/16 IN1k')
 from models import vit_b16_in1k
 model = vit_b16_in1k()
+
+
+print('Testing ViT L/16 IN1k')
+from models import vit_l16_in1k
+model = vit_l16_in1k()

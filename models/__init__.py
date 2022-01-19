@@ -23,7 +23,7 @@ class ModelCheckpoints(Enum):
     vit_b16 = ""
     vit_b16_in1k = "https://dl.fbaipublicfiles.com/SWAG/vit_b16_in1k.torch"
     vit_l16 = ""
-    vit_l16_in1k = ""
+    vit_l16_in1k = "https://dl.fbaipublicfiles.com/SWAG/vit_l16_in1k.torch"
     vit_h14 = "https://dl.fbaipublicfiles.com/SWAG/vit_h14_10b.torch"
     vit_h14_in1k = "https://dl.fbaipublicfiles.com/SWAG/vit_h14_in1k.torch"
 
