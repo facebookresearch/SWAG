@@ -1,8 +1,10 @@
-#!/usr/bin/env python3
 # Copyright (c) Meta Platforms, Inc. and affiliates.
-#
-# This source code is licensed under the MIT license found in the
+# All rights reserved.
+
+# This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
+
+# Modified from https://github.com/facebookresearch/ClassyVision/blob/main/classy_vision/models/regnet.py
 
 import copy
 import math
@@ -516,36 +518,6 @@ class AnyNet(nn.Module):
         # Init weights and good to go
         self.init_weights()
 
-    @classmethod
-    def from_config(cls, config: Dict[str, Any]) -> "AnyNet":
-        """Instantiates an AnyNet from a configuration.
-        Args:
-            config: A configuration for an AnyNet.
-                See `AnyNetParams` for parameters expected in the config.
-        Returns:
-            An AnyNet instance.
-        """
-
-        params = AnyNetParams(
-            depths=config["depths"],
-            widths=config["widths"],
-            group_widths=config["group_widths"],
-            bottleneck_multipliers=config["bottleneck_multipliers"],
-            strides=config["strides"],
-            stem_type=StemType[config.get("stem_type", "simple_stem_in").upper()],
-            stem_width=config.get("stem_width", 32),
-            block_type=BlockType[
-                config.get("block_type", "res_bottleneck_block").upper()
-            ],
-            activation=ActivationType[config.get("activation", "relu").upper()],
-            use_se=config.get("use_se", True),
-            se_ratio=config.get("se_ratio", 0.25),
-            bn_epsilon=config.get("bn_epsilon", 1e-05),
-            bn_momentum=config.get("bn_momentum", 0.1),
-        )
-
-        return cls(params)
-
     def forward(self, x, *args, **kwargs):
         x = self.stem(x)
         x = self.trunk_output(x)
@@ -688,37 +660,6 @@ class RegNet(AnyNet):
     def __init__(self, params: RegNetParams):
         super().__init__(params)
 
-    @classmethod
-    def from_config(cls, config: Dict[str, Any]) -> "RegNet":
-        """Instantiates a RegNet from a configuration.
-        Args:
-            config: A configuration for a RegNet.
-                See `RegNetParams` for parameters expected in the config.
-        Returns:
-            A RegNet instance.
-        """
-
-        params = RegNetParams(
-            depth=config["depth"],
-            w_0=config["w_0"],
-            w_a=config["w_a"],
-            w_m=config["w_m"],
-            group_width=config["group_width"],
-            bottleneck_multiplier=config.get("bottleneck_multiplier", 1.0),
-            stem_type=StemType[config.get("stem_type", "simple_stem_in").upper()],
-            stem_width=config.get("stem_width", 32),
-            block_type=BlockType[
-                config.get("block_type", "res_bottleneck_block").upper()
-            ],
-            activation=ActivationType[config.get("activation", "relu").upper()],
-            use_se=config.get("use_se", True),
-            se_ratio=config.get("se_ratio", 0.25),
-            bn_epsilon=config.get("bn_epsilon", 1e-05),
-            bn_momentum=config.get("bn_momentum", 0.1),
-        )
-
-        return cls(params)
-
     def forward(self, x, *args, **kwargs):
         x = self.stem(x)
         x = self.trunk_output(x)
@@ -740,21 +681,7 @@ class RegNet(AnyNet):
                 m.bias.data.zero_()
 
 
-# Register some "classic" RegNets
-class _RegNet(RegNet):
-    def __init__(self, params: RegNetParams):
-        super().__init__(params)
-
-    @classmethod
-    def from_config(cls, config: Dict[str, Any]) -> "RegNet":
-        config = copy.deepcopy(config)
-        config.pop("name")
-        if "heads" in config:
-            config.pop("heads")
-        return cls(**config)
-
-
-class RegNetY16gf(_RegNet):
+class RegNetY16gf(RegNet):
     def __init__(self, **kwargs):
         # Output size: 3024 feature maps
         super().__init__(
@@ -764,7 +691,7 @@ class RegNetY16gf(_RegNet):
         )
 
 
-class RegNetY32gf(_RegNet):
+class RegNetY32gf(RegNet):
     def __init__(self, **kwargs):
         # Output size: 3712 feature maps
         super().__init__(
@@ -774,7 +701,7 @@ class RegNetY32gf(_RegNet):
         )
 
 
-class RegNetY128gf(_RegNet):
+class RegNetY128gf(RegNet):
     def __init__(self, **kwargs):
         # Output size: 7392 feature maps
         super().__init__(

@@ -1,8 +1,10 @@
-#!/usr/bin/env python3
 # Copyright (c) Meta Platforms, Inc. and affiliates.
-#
-# This source code is licensed under the MIT license found in the
+# All rights reserved.
+
+# This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
+
+# Modified from https://github.com/facebookresearch/ClassyVision/blob/main/classy_vision/models/vision_transformer.py
 
 """
 Vision Transformer implementation from https://arxiv.org/abs/2010.11929.
@@ -278,13 +280,6 @@ class VisionTransformer(nn.Module):
             )
             nn.init.zeros_(self.conv_proj.bias)
 
-    @classmethod
-    def from_config(cls, config):
-        config = copy.deepcopy(config)
-        config.pop("name")
-        config.pop("heads", None)
-        return cls(**config)
-
     def forward(self, x: torch.Tensor):
         assert x.ndim == 4, "Unexpected input shape"
         n, c, h, w = x.shape
@@ -385,10 +380,6 @@ class VisionTransformer(nn.Module):
             )
             state["encoder.pos_embedding"] = new_pos_embedding
         super().load_state_dict(state, strict=strict)
-
-    @property
-    def input_shape(self):
-        return (3, self.image_size, self.image_size)
 
 
 class ViTB16(VisionTransformer):
