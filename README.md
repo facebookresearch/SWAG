@@ -3,7 +3,7 @@
 This repository contains model checkpoints for the SWAG models (**S**upervised **W**eakly from hasht**AG**s), from the paper [Revisiting Weakly Supervised Pre-Training of Visual Perception Models]().
 
 ## Requirements
-This code has been tested to work with Python 3.8, torch 1.10.1 and torchvision 0.11.2.
+This code has been tested to work with Python 3.8, torch 1.10.1 and torchvision 0.11.2 with CUDA 10.2.
 
 ## Model Zoo
 
