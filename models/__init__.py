@@ -34,14 +34,12 @@ IN1K_CLASSES = 1000
 def build_model(
     cls: type,
     checkpoint_path: str,
-    num_classes: Optional[int] = None,
     pretrained: bool = True,
     map_location: Any = None,
     progress: bool = True,
     **kwargs
 ):
-    model = cls(num_classes=num_classes, **kwargs)
-    #model = cls(**kwargs)
+    model = cls(**kwargs)
     if pretrained:
         checkpoint = load_state_dict_from_url(
             checkpoint_path, map_location=map_location, progress=progress
@@ -154,6 +152,7 @@ def vit_b16_in1k(
     return build_model(
         ViTB16,
         ModelCheckpoints.vit_b16_in1k.value,
+        image_size=384,
         num_classes=IN1K_CLASSES,
         pretrained=pretrained,
         map_location=map_location,
@@ -182,6 +181,7 @@ def vit_l16_in1k(
     return build_model(
         ViTL16,
         ModelCheckpoints.vit_l16_in1k.value,
+        image_size=512,
         num_classes=IN1K_CLASSES,
         pretrained=pretrained,
         map_location=map_location,
@@ -210,6 +210,7 @@ def vit_h14_in1k(
     return build_model(
         ViTH14,
         ModelCheckpoints.vit_h14_in1k.value,
+        image_size=518,
         num_classes=IN1K_CLASSES,
         pretrained=pretrained,
         map_location=map_location,
