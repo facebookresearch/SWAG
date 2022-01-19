@@ -342,7 +342,7 @@ class VisionTransformer(nn.Module):
         self.seq_length = seq_length
         self.init_weights()
 
-        if num_classes > 0:
+        if num_classes is not None:
             self.head = VisionTransformerHead(num_classes=num_classes,in_plane=head_in_plane)
         else:
             self.head = None
@@ -390,9 +390,8 @@ class VisionTransformer(nn.Module):
             x = x.mean(dim=0)
 
         x = self.trunk_output(x)
-        if self.head is None:
-            return x
-        x = self.head(x)
+        if self.head is not None:
+            x = self.head(x)
 
         return x
 
