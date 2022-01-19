@@ -18,13 +18,23 @@ import logging
 import math
 from collections import OrderedDict
 from functools import partial
-from typing import Dict, List, Mapping, NamedTuple, Union
+from typing import Dict, List, Mapping, NamedTuple, Optional, Union
 
 import torch
 import torch.nn as nn
 
 
+NORMALIZE_L2 = "l2"
+
+
 LayerNorm = partial(nn.LayerNorm, eps=1e-6)
+
+
+def is_pos_int(number: int) -> bool:
+    """
+    Returns True if a number is a positive integer.
+    """
+    return type(number) == int and number >= 0
 
 
 class ConvStemLayer(NamedTuple):
@@ -44,6 +54,61 @@ def get_same_padding_for_kernel_size(kernel_size):
     if kernel_size % 2 == 0:
         raise ValueError(f"Only odd sized kernels are supported, got {kernel_size}")
     return (kernel_size - 1) // 2
+
+
+class VisionTransformerHead(nn.Module):
+    def __init__(
+        self,
+        in_plane: int,
+        num_classes: Optional[int] = None,
+        hidden_dim: Optional[int] = None,
+        normalize_inputs: Optional[str] = None,
+    ):
+        """
+        Args:
+            in_plane: Input size for the fully connected layer
+            num_classes: Number of output classes for the head
+            hidden_dim: If not None, a hidden layer with the specific dimension is added
+            normalize_inputs: If specified, normalize the inputs using the specified
+                method. Supports "l2" normalization.
+        """
+        super().__init__()
+
+        if normalize_inputs is not None and normalize_inputs != NORMALIZE_L2:
+            raise ValueError(
+                f"Unsupported value for normalize_inputs: {normalize_inputs}"
+            )
+
+        if num_classes is None:
+            layers = []
+        elif hidden_dim is None:
+            layers = [("head", nn.Linear(in_plane, num_classes))]
+        else:
+            layers = [
+                ("pre_logits", nn.Linear(in_plane, hidden_dim)),
+                ("act", nn.Tanh()),
+                ("head", nn.Linear(hidden_dim, num_classes)),
+            ]
+        self.layers = nn.Sequential(OrderedDict(layers))
+        self.normalize_inputs = normalize_inputs
+        self.init_weights()
+
+    def init_weights(self):
+        if hasattr(self.layers, "pre_logits"):
+            lecun_normal_init(
+                self.layers.pre_logits.weight, fan_in=self.layers.pre_logits.in_features
+            )
+            nn.init.zeros_(self.layers.pre_logits.bias)
+        if hasattr(self.layers, "head"):
+            nn.init.zeros_(self.layers.head.weight)
+            nn.init.zeros_(self.layers.head.bias)
+
+
+    def forward(self, x):
+        if self.normalize_inputs is not None:
+            if self.normalize_inputs == NORMALIZE_L2:
+                x = nn.functional.normalize(x, p=2.0, dim=1)
+        return self.layers(x)
 
 
 class MLPBlock(nn.Sequential):
@@ -201,10 +266,17 @@ class VisionTransformer(nn.Module):
         attention_dropout_rate=0,
         classifier="token",
         conv_stem_layers: Union[List[ConvStemLayer], List[Dict], None] = None,
+        num_classes: Optional[int] = None,
+        head_in_plane: Optional[int] = None,
     ):
         super().__init__()
         assert image_size % patch_size == 0, "Input shape indivisible by patch size"
         assert classifier in ["token", "gap"], "Unexpected classifier mode"
+        assert (
+            (num_classes is None or is_pos_int(num_classes))
+            and (head_in_plane is None or is_pos_int(head_in_plane))
+        )
+
         self.image_size = image_size
         self.patch_size = patch_size
         self.hidden_dim = hidden_dim
@@ -270,6 +342,11 @@ class VisionTransformer(nn.Module):
         self.seq_length = seq_length
         self.init_weights()
 
+        if num_classes > 0:
+            self.head = VisionTransformerHead(num_classes=num_classes,in_plane=head_in_plane)
+        else:
+            self.head = None
+
     def init_weights(self):
         if self.conv_stem_layers is None:
             lecun_normal_init(
@@ -312,7 +389,12 @@ class VisionTransformer(nn.Module):
         else:
             x = x.mean(dim=0)
 
-        return self.trunk_output(x)
+        x = self.trunk_output(x)
+        if self.head is None:
+            return x
+        x = self.head(x)
+
+        return x
 
     def load_state_dict(self, state, strict=True):
         # shape of pos_embedding is (seq_length, 1, hidden_dim)
@@ -389,6 +471,7 @@ class ViTB16(VisionTransformer):
         dropout_rate=0,
         attention_dropout_rate=0,
         classifier="token",
+        num_classes=None,
     ):
         super().__init__(
             image_size=image_size,
@@ -400,6 +483,8 @@ class ViTB16(VisionTransformer):
             dropout_rate=dropout_rate,
             attention_dropout_rate=attention_dropout_rate,
             classifier=classifier,
+            num_classes=num_classes,
+            head_in_plane=768,
         )
 
 
@@ -410,6 +495,7 @@ class ViTL16(VisionTransformer):
         dropout_rate=0,
         attention_dropout_rate=0,
         classifier="token",
+        num_classes=None,
     ):
         super().__init__(
             image_size=image_size,
@@ -421,6 +507,8 @@ class ViTL16(VisionTransformer):
             dropout_rate=dropout_rate,
             attention_dropout_rate=attention_dropout_rate,
             classifier=classifier,
+            num_classes=num_classes,
+            head_in_plane=1024,
         )
 
 
@@ -431,6 +519,7 @@ class ViTH14(VisionTransformer):
         dropout_rate=0,
         attention_dropout_rate=0,
         classifier="token",
+        num_classes=None,
     ):
         super().__init__(
             image_size=image_size,
@@ -442,4 +531,6 @@ class ViTH14(VisionTransformer):
             dropout_rate=dropout_rate,
             attention_dropout_rate=attention_dropout_rate,
             classifier=classifier,
+            num_classes=num_classes,
+            head_in_plane=1280,
         )
