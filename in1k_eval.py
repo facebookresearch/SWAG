@@ -102,7 +102,7 @@ def main_worker(gpu, ngpus_per_node, args):
         dist.init_process_group(backend=args.dist_backend, init_method=args.dist_url,
                                 world_size=args.world_size, rank=args.rank)
     # create model
-    model = torch.hub.load("/private/home/mannatsingh/git/code_release/SWAG", args.model, source="local")
+    model = torch.hub.load("./", args.model, source="local")
     from torchvision.models import resnet50
     model = resnet50(pretrained=True)
 
