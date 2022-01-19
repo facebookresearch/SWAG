@@ -14,21 +14,18 @@ from .vision_transformer import ViTB16, ViTH14, ViTL16
 
 
 class ModelCheckpoints(Enum):
-    regnety_16gf = ""
+    regnety_16gf = "https://dl.fbaipublicfiles.com/SWAG/regnety_16gf.torch"
     regnety_16gf_in1k = "https://dl.fbaipublicfiles.com/SWAG/regnety_16gf_in1k.torch"
-    regnety_32gf = ""
+    regnety_32gf = "https://dl.fbaipublicfiles.com/SWAG/regnety_32gf.torch"
     regnety_32gf_in1k = "https://dl.fbaipublicfiles.com/SWAG/regnety_32gf_in1k.torch"
-    regnety_128gf = "https://dl.fbaipublicfiles.com/SWAG/regnety_128gf_10b.torch"
-    regnety_128gf_in1k = (
-        "https://dl.fbaipublicfiles.com/SWAG/regnety_128gf_10b_in_ft.torch"
-    )
-    vit_b16 = ""
+    regnety_128gf = "https://dl.fbaipublicfiles.com/SWAG/regnety_128gf.torch"
+    regnety_128gf_in1k = "https://dl.fbaipublicfiles.com/SWAG/regnety_128gf_in1k.torch"
+    vit_b16 = "https://dl.fbaipublicfiles.com/SWAG/vit_b16.torch"
     vit_b16_in1k = "https://dl.fbaipublicfiles.com/SWAG/vit_b16_in1k.torch"
-    vit_l16 = ""
+    vit_l16 = "https://dl.fbaipublicfiles.com/SWAG/vit_l16.torch"
     vit_l16_in1k = "https://dl.fbaipublicfiles.com/SWAG/vit_l16_in1k.torch"
-    vit_h14 = "https://dl.fbaipublicfiles.com/SWAG/vit_h14_10b.torch"
+    vit_h14 = "https://dl.fbaipublicfiles.com/SWAG/vit_h14.torch"
     vit_h14_in1k = "https://dl.fbaipublicfiles.com/SWAG/vit_h14_in1k.torch"
-
 
 IN1K_CLASSES = 1000
 
