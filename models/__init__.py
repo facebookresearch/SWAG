@@ -126,7 +126,8 @@ def regnety_128gf_in1k(
     return build_model(
         RegNetY128gf,
         ModelCheckpoints.regnety_128gf_in1k.value,
-        num_classes=IN1K_CLASSES,
+        head_num_classes=IN1K_CLASSES,
+        head_in_plane=7392,
         pretrained=pretrained,
         map_location=map_location,
         progress=progress,

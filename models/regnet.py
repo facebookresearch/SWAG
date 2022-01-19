@@ -17,6 +17,91 @@ import torch.nn as nn
 
 
 RELU_IN_PLACE = True
+NORMALIZE_L2 = "l2"
+
+
+def is_pos_int(number: int) -> bool:
+    """
+    Returns True if a number is a positive integer.
+    """
+    return type(number) == int and number >= 0
+
+
+class FullyConnectedHead(nn.Module):
+    """This head defines a 2d average pooling layer
+    (:class:`torch.nn.AdaptiveAvgPool2d`) followed by a fully connected
+    layer (:class:`torch.nn.Linear`).
+    """
+
+    def __init__(
+        self,
+        num_classes: Optional[int],
+        in_plane: int,
+        conv_planes: Optional[int] = None,
+        activation: Optional[nn.Module] = None,
+        zero_init_bias: bool = False,
+        normalize_inputs: Optional[str] = None,
+    ):
+        """Constructor for FullyConnectedHead
+        Args:
+            num_classes: Number of classes for the head. If None, then the fully
+                connected layer is not applied.
+            in_plane: Input size for the fully connected layer.
+            conv_planes: If specified, applies a 1x1 convolutional layer to the input
+                before passing it to the average pooling layer. The convolution is also
+                followed by a BatchNorm and an activation.
+            activation: The activation to be applied after the convolutional layer.
+                Unused if `conv_planes` is not specified.
+            zero_init_bias: Zero initialize the bias
+            normalize_inputs: If specified, normalize the inputs after performing
+                average pooling using the specified method. Supports "l2" normalization.
+        """
+        super().__init__()
+        assert num_classes is None or is_pos_int(num_classes)
+        assert is_pos_int(in_plane)
+        if conv_planes is not None and activation is None:
+            raise TypeError("activation cannot be None if conv_planes is specified")
+        if normalize_inputs is not None and normalize_inputs != NORMALIZE_L2:
+            raise ValueError(
+                f"Unsupported value for normalize_inputs: {normalize_inputs}"
+            )
+        self.conv = (
+            nn.Conv2d(in_plane, conv_planes, kernel_size=1, bias=False)
+            if conv_planes
+            else None
+        )
+        self.bn = nn.BatchNorm2d(conv_planes) if conv_planes else None
+        self.activation = activation
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.fc = (
+            None
+            if num_classes is None
+            else nn.Linear(
+                in_plane if conv_planes is None else conv_planes, num_classes
+            )
+        )
+        self.normalize_inputs = normalize_inputs
+
+        if zero_init_bias:
+            self.fc.bias.data.zero_()
+
+    def forward(self, x):
+        out = x
+        if self.conv is not None:
+            out = self.activation(self.bn(self.conv(x)))
+
+        out = self.avgpool(out)
+
+        out = out.flatten(start_dim=1)
+
+        if self.normalize_inputs is not None:
+            if self.normalize_inputs == NORMALIZE_L2:
+                out = nn.functional.normalize(out, p=2.0, dim=1)
+
+        if self.fc is not None:
+            out = self.fc(out)
+
+        return out
 
 
 # The different possible blocks
@@ -415,6 +500,8 @@ class AnyNetParams:
         se_ratio: float = 0.25,
         bn_epsilon: float = 1e-05,
         bn_momentum: bool = 0.1,
+        head_num_classes: int = 0,
+        head_in_plane: int = 0,
     ):
         self.depths = depths
         self.widths = widths
@@ -429,6 +516,8 @@ class AnyNetParams:
         self.se_ratio = se_ratio if use_se else None
         self.bn_epsilon = bn_epsilon
         self.bn_momentum = bn_momentum
+        self.head_num_classes = head_num_classes
+        self.head_in_plane = head_in_plane
         self.relu_in_place = RELU_IN_PLACE
 
     def get_expanded_params(self):
@@ -458,6 +547,8 @@ class AnyNet(nn.Module):
         if activation is None:
             raise RuntimeError("SiLU activation is only supported since PyTorch 1.7")
 
+        assert ((params.head_num_classes == 0 and params.head_in_plane == 0 ) or
+            (is_pos_int(params.head_num_classes) and is_pos_int(params.head_in_plane)))
         # Ad hoc stem
         self.stem = {
             StemType.RES_STEM_CIFAR: ResStemCifar,
@@ -518,9 +609,18 @@ class AnyNet(nn.Module):
         # Init weights and good to go
         self.init_weights()
 
+        # If head, create
+        if params.head_num_classes > 0:
+            self.head = FullyConnectedHead(num_classes=params.head_num_classes,in_plane=params.head_in_plane)
+        else:
+            self.head = None
+
     def forward(self, x, *args, **kwargs):
         x = self.stem(x)
         x = self.trunk_output(x)
+        if self.head is None:
+            return x
+        x = self.head(x)
 
         return x
 
@@ -574,6 +674,8 @@ class RegNetParams(AnyNetParams):
         se_ratio: float = 0.25,
         bn_epsilon: float = 1e-05,
         bn_momentum: bool = 0.1,
+        head_num_classes: int = 0,
+        head_in_plane: int = 0,
     ):
         assert (
             w_a >= 0 and w_0 > 0 and w_m > 1 and w_0 % 8 == 0
@@ -592,6 +694,8 @@ class RegNetParams(AnyNetParams):
         self.se_ratio = se_ratio if use_se else None
         self.bn_epsilon = bn_epsilon
         self.bn_momentum = bn_momentum
+        self.head_num_classes = head_num_classes
+        self.head_in_plane = head_in_plane
         self.relu_in_place = RELU_IN_PLACE
 
     def get_expanded_params(self):
@@ -663,6 +767,9 @@ class RegNet(AnyNet):
     def forward(self, x, *args, **kwargs):
         x = self.stem(x)
         x = self.trunk_output(x)
+        if self.head is None:
+            return x
+        x = self.head(x)
 
         return x
 
