@@ -500,8 +500,8 @@ class AnyNetParams:
         se_ratio: float = 0.25,
         bn_epsilon: float = 1e-05,
         bn_momentum: bool = 0.1,
-        head_num_classes: int = 0,
-        head_in_plane: int = 0,
+        num_classes: Optional[int] = None,
+        head_in_plane: Optional[int] = None,
     ):
         self.depths = depths
         self.widths = widths
@@ -516,7 +516,7 @@ class AnyNetParams:
         self.se_ratio = se_ratio if use_se else None
         self.bn_epsilon = bn_epsilon
         self.bn_momentum = bn_momentum
-        self.head_num_classes = head_num_classes
+        self.num_classes = num_classes
         self.head_in_plane = head_in_plane
         self.relu_in_place = RELU_IN_PLACE
 
@@ -547,8 +547,10 @@ class AnyNet(nn.Module):
         if activation is None:
             raise RuntimeError("SiLU activation is only supported since PyTorch 1.7")
 
-        assert ((params.head_num_classes == 0 and params.head_in_plane == 0 ) or
-            (is_pos_int(params.head_num_classes) and is_pos_int(params.head_in_plane)))
+        assert (
+            (params.num_classes is None or is_pos_int(params.num_classes))
+            and (params.head_in_plane is None or is_pos_int(params.head_in_plane))
+        )
         # Ad hoc stem
         self.stem = {
             StemType.RES_STEM_CIFAR: ResStemCifar,
@@ -610,8 +612,8 @@ class AnyNet(nn.Module):
         self.init_weights()
 
         # If head, create
-        if params.head_num_classes > 0:
-            self.head = FullyConnectedHead(num_classes=params.head_num_classes,in_plane=params.head_in_plane)
+        if params.num_classes is not None:
+            self.head = FullyConnectedHead(num_classes=params.num_classes, in_plane=params.head_in_plane)
         else:
             self.head = None
 
@@ -674,8 +676,8 @@ class RegNetParams(AnyNetParams):
         se_ratio: float = 0.25,
         bn_epsilon: float = 1e-05,
         bn_momentum: bool = 0.1,
-        head_num_classes: int = 0,
-        head_in_plane: int = 0,
+        num_classes: Optional[int] = None,
+        head_in_plane: Optional[int] = None,
     ):
         assert (
             w_a >= 0 and w_0 > 0 and w_m > 1 and w_0 % 8 == 0
@@ -694,7 +696,7 @@ class RegNetParams(AnyNetParams):
         self.se_ratio = se_ratio if use_se else None
         self.bn_epsilon = bn_epsilon
         self.bn_momentum = bn_momentum
-        self.head_num_classes = head_num_classes
+        self.num_classes = num_classes
         self.head_in_plane = head_in_plane
         self.relu_in_place = RELU_IN_PLACE
 
@@ -789,31 +791,37 @@ class RegNet(AnyNet):
 
 
 class RegNetY16gf(RegNet):
+    HEAD_IN_PLANE = 3024
+
     def __init__(self, **kwargs):
         # Output size: 3024 feature maps
         super().__init__(
             RegNetParams(
-                depth=18, w_0=200, w_a=106.23, w_m=2.48, group_width=112, **kwargs
+                depth=18, w_0=200, w_a=106.23, w_m=2.48, group_width=112, head_in_plane=RegNetY128gf.HEAD_IN_PLANE, **kwargs
             )
         )
 
 
 class RegNetY32gf(RegNet):
+    HEAD_IN_PLANE = 3712
+
     def __init__(self, **kwargs):
         # Output size: 3712 feature maps
         super().__init__(
             RegNetParams(
-                depth=20, w_0=232, w_a=115.89, w_m=2.53, group_width=232, **kwargs
+                depth=20, w_0=232, w_a=115.89, w_m=2.53, group_width=232, head_in_plane=RegNetY128gf.HEAD_IN_PLANE, **kwargs
             )
         )
 
 
 class RegNetY128gf(RegNet):
+    HEAD_IN_PLANE = 7392
+
     def __init__(self, **kwargs):
         # Output size: 7392 feature maps
         super().__init__(
             RegNetParams(
-                depth=27, w_0=456, w_a=160.83, w_m=2.52, group_width=264, **kwargs
+                depth=27, w_0=456, w_a=160.83, w_m=2.52, group_width=264, head_in_plane=RegNetY128gf.HEAD_IN_PLANE, **kwargs
             )
         )
 

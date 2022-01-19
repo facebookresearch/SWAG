@@ -40,8 +40,8 @@ def build_model(
     progress: bool = True,
     **kwargs
 ):
-    #model = cls(num_classes=num_classes, **kwargs)
-    model = cls(**kwargs)
+    model = cls(num_classes=num_classes, **kwargs)
+    #model = cls(**kwargs)
     if pretrained:
         checkpoint = load_state_dict_from_url(
             checkpoint_path, map_location=map_location, progress=progress
@@ -126,8 +126,7 @@ def regnety_128gf_in1k(
     return build_model(
         RegNetY128gf,
         ModelCheckpoints.regnety_128gf_in1k.value,
-        head_num_classes=IN1K_CLASSES,
-        head_in_plane=7392,
+        num_classes=IN1K_CLASSES,
         pretrained=pretrained,
         map_location=map_location,
         progress=progress,
