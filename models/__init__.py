@@ -17,7 +17,7 @@ class ModelCheckpoints(Enum):
     regnety_16gf = ""
     regnety_16gf_in1k = "https://dl.fbaipublicfiles.com/SWAG/regnety_16gf_in1k.torch"
     regnety_32gf = ""
-    regnety_32gf_in1k = ""
+    regnety_32gf_in1k = "https://dl.fbaipublicfiles.com/SWAG/regnety_32gf_in1k.torch"
     regnety_128gf = "https://dl.fbaipublicfiles.com/SWAG/regnety_128gf_10b.torch"
     regnety_128gf_in1k = "https://dl.fbaipublicfiles.com/SWAG/regnety_128gf_10b_in_ft.torch"
     vit_b16 = ""
