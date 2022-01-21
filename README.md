@@ -39,7 +39,7 @@ model = torch.hub.load("facebookresearch/swag", model="vit_b16_in1k")
 
 For a tutorial with step-by-step instructions to perform inference, follow our [inference tutorial](inference_tutorial.ipynb) and run it locally, or [![Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/facebookresearch/swag/blob/main/inference_tutorial.ipynb).
 
-Web Demo [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/akhaliq/SWAG)
+Integrated into [Huggingface Spaces 🤗](https://huggingface.co/spaces) using [Gradio](https://github.com/gradio-app/gradio). Try out the Web Demo [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/akhaliq/SWAG)
 
 ## ImageNet 1K Evaluation
 
