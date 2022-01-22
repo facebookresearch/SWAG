@@ -2,10 +2,10 @@
 
 This repository contains SWAG models from the paper [Revisiting Weakly Supervised Pre-Training of Visual Perception Models](https://arxiv.org/abs/2201.08371).
 
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/revisiting-weakly-supervised-pre-training-of/image-classification-on-places365-standard)](https://paperswithcode.com/sota/image-classification-on-places365-standard?p=revisiting-weakly-supervised-pre-training-of)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/revisiting-weakly-supervised-pre-training-of/image-classification-on-inaturalist-2018)](https://paperswithcode.com/sota/image-classification-on-inaturalist-2018?p=revisiting-weakly-supervised-pre-training-of)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/revisiting-weakly-supervised-pre-training-of/fine-grained-image-classification-on-cub-200-1)](https://paperswithcode.com/sota/fine-grained-image-classification-on-cub-200-1?p=revisiting-weakly-supervised-pre-training-of)
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/revisiting-weakly-supervised-pre-training-of/image-classification-on-objectnet)](https://paperswithcode.com/sota/image-classification-on-objectnet?p=revisiting-weakly-supervised-pre-training-of)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/revisiting-weakly-supervised-pre-training-of/image-classification-on-places365-standard)](https://paperswithcode.com/sota/image-classification-on-places365-standard?p=revisiting-weakly-supervised-pre-training-of)  
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/revisiting-weakly-supervised-pre-training-of/image-classification-on-inaturalist-2018)](https://paperswithcode.com/sota/image-classification-on-inaturalist-2018?p=revisiting-weakly-supervised-pre-training-of)  
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/revisiting-weakly-supervised-pre-training-of/fine-grained-image-classification-on-cub-200-1)](https://paperswithcode.com/sota/fine-grained-image-classification-on-cub-200-1?p=revisiting-weakly-supervised-pre-training-of)  
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/revisiting-weakly-supervised-pre-training-of/image-classification-on-objectnet)](https://paperswithcode.com/sota/image-classification-on-objectnet?p=revisiting-weakly-supervised-pre-training-of)  
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/revisiting-weakly-supervised-pre-training-of/image-classification-on-imagenet-v2)](https://paperswithcode.com/sota/image-classification-on-imagenet-v2?p=revisiting-weakly-supervised-pre-training-of)
 
 
