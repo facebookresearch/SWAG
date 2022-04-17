@@ -72,8 +72,8 @@ Note that we specify a `384 x 384` resolution since that was the model's trainin
 If you use the SWAG models or if the work is useful in your research, please give us a star and cite:  
 
 ```bibtex
-@misc{singh2022revisiting,
-      title={Revisiting Weakly Supervised Pre-Training of Visual Perception Models}, 
+@inproceedings{singh2022revisiting,
+      title={{Revisiting Weakly Supervised Pre-Training of Visual Perception Models}}, 
       author={Singh, Mannat and Gustafson, Laura and Adcock, Aaron and Reis, Vinicius de Freitas and Gedik, Bugra and Kosaraju, Raj Prateek and Mahajan, Dhruv and Girshick, Ross and Doll{\'a}r, Piotr and van der Maaten, Laurens},
       booktitle={CVPR},
       year={2022}
